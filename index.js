@@ -14,6 +14,40 @@ app.get('/health', (_req, res) => {
   });
 });
 
+app.get('/api/v1/articles', (req, res) => {
+  res.status(200).json({ path: '/articles', method: 'get' });
+});
+
+app.post('/api/v1/articles', (req, res) => {
+  res.status(200).json({ path: '/articles', method: 'post' });
+});
+
+app.get('/api/v1/articles/:id', (req, res) => {
+  res.status(200).json({ path: `/articles/${req.params.id}`, method: 'get' });
+});
+
+app.put('/api/v1/articles/:id', (req, res) => {
+  res.status(200).json({ path: `/articles/${req.params.id}`, method: 'put' });
+});
+
+app.patch('/api/v1/articles/:id', (req, res) => {
+  res.status(200).json({ path: `/articles/${req.params.id}`, method: 'patch' });
+});
+
+app.delete('/api/v1/articles/:id', (req, res) => {
+  res
+    .status(200)
+    .json({ path: `/articles/${req.params.id}`, method: 'delete' });
+});
+
+app.post('/api/v1/auth/signup', (req, res) => {
+  res.status(200).json({ path: '/auth/signup', method: 'post' });
+});
+
+app.post('/api/v1/auth/signin', (req, res) => {
+  res.status(200).json({ path: '/auth/signin', method: 'post' });
+});
+
 app.listen(4000, () => {
   console.log('Server is running on port 4000');
 });
