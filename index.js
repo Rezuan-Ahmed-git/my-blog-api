@@ -4,7 +4,8 @@ const swaggerUI = require('swagger-ui-express');
 const YAML = require('yamljs');
 const swaggerDoc = YAML.load('./swagger.yaml');
 
-const connection = require('./db.js');
+// const connection = require('./db.js');
+const Article = require('./models/Article.js');
 
 //express app
 const app = express();
@@ -26,33 +27,28 @@ app.get('/api/v1/articles', async (req, res) => {
   const searchTerm = req.query.search || '';
 
   // 2. call article service to fetch all articles
-  const db = await connection.getDB();
-  let articles = db.articles;
+  const articleInstance = new Article();
+  await articleInstance.init();
+  let articles;
 
   //filter based on Search Term
   if (searchTerm) {
-    articles = articles.filter((article) =>
-      article.title.toLowerCase().includes(searchTerm)
-    );
+    articles = await articleInstance.search(searchTerm);
+  } else {
+    articles = await articleInstance.find();
   }
 
   //sorting
-  articles = articles.sort((a, b) => {
-    if (sortType === 'asc')
-      return a[sortBy].toString().localeCompare(b[sortBy].toString());
-    if (sortType === 'dsc')
-      return b[sortBy].toString().localeCompare(a[sortBy].toString());
-  });
+  articles = await articleInstance.sort(articles, sortType, sortBy);
 
   //pagination
-  const skip = page * limit - limit;
-  let resultedArticles = articles.slice(skip, skip + limit);
-  const totalItems = articles.length;
-  const totalPage = Math.ceil(totalItems / limit);
+  const { result, totalItems, totalPage, hasNext, hasPrev } =
+    await articleInstance.pagination(articles, page, limit);
+  articles = result;
 
   // 3. generate necessary responses
 
-  resultedArticles = resultedArticles.map((article) => {
+  articles = articles.map((article) => {
     const transformed = { ...article };
     transformed.author = {
       id: transformed.authorId,
@@ -66,7 +62,7 @@ app.get('/api/v1/articles', async (req, res) => {
   });
 
   const response = {
-    data: resultedArticles,
+    data: articles,
     pagination: {
       page,
       limit,
@@ -78,12 +74,12 @@ app.get('/api/v1/articles', async (req, res) => {
     },
   };
 
-  if (page > 1) {
+  if (hasPrev) {
     response.pagination.prev = page - 1;
     response.links.prev = `/articles?page=${page - 1}&limit=${limit}`;
   }
 
-  if (page < totalPage) {
+  if (hasNext) {
     response.pagination.next = page + 1;
     response.links.next = `/articles?page=${page + 1}&limit=${limit}`;
   }
