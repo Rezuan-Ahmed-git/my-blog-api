@@ -1,5 +1,33 @@
 {
-  "users": ["Rezuan", "Ahmed", "Shourav"],
-  "articles": ["1 Article"],
-  "comments": ["This is my first comment"]
+  "users": [],
+  "articles": [
+    {
+      "id": 1,
+      "authorId": 1,
+      "title": "First Article",
+      "body": "Body of the first article",
+      "status": "published",
+      "createdAt": "2023-06-26T02:44:34.850Z",
+      "UpdatedAt": "2023-06-26T02:44:34.850Z"
+    },
+    {
+      "id": 2,
+      "authorId": 2,
+      "title": "Second Article",
+      "body": "Body of the second article",
+      "status": "published",
+      "createdAt": "2023-06-26T02:44:34.850Z",
+      "UpdatedAt": "2023-06-26T02:44:34.850Z"
+    },
+    {
+      "id": 3,
+      "authorId": 3,
+      "title": "Third Article",
+      "body": "Body of the third article",
+      "status": "published",
+      "createdAt": "2023-06-26T02:44:34.850Z",
+      "UpdatedAt": "2023-06-26T02:44:34.850Z"
+    }
+  ],
+  "comments": []
 }

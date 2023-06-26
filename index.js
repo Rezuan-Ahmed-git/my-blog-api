@@ -4,7 +4,7 @@ const swaggerUI = require('swagger-ui-express');
 const YAML = require('yamljs');
 const swaggerDoc = YAML.load('./swagger.yaml');
 
-require('./db.js');
+const connection = require('./db.js');
 
 //express app
 const app = express();
@@ -17,19 +17,58 @@ app.get('/health', (_req, res) => {
   });
 });
 
-app.get('/api/v1/articles', (req, res) => {
+app.get('/api/v1/articles', async (req, res) => {
   // 1. extract query params
   const page = +req.query.page || 1;
   const limit = +req.query.limit || 10;
   const sortType = req.query.sort_type || 'asc';
   const sortBy = req.query.sort_by || 'updatedAt';
   const searchTerm = req.query.search || '';
-  console.log('Query params', req.query);
-  console.log('Default params', { page, limit, sortBy, sortType, searchTerm });
+
   // 2. call article service to fetch all articles
+  const db = await connection.getDB();
+  let articles = db.articles;
+
+  //filter based on Search Term
+  if (searchTerm) {
+    articles = articles.filter((article) =>
+      article.title.toLowerCase().includes(searchTerm)
+    );
+  }
+
   // 3. generate necessary responses
 
-  res.status(200).json({ path: '/articles', method: 'get' });
+  const transformedArticle = articles.map((article) => {
+    const transformed = { ...article };
+    transformed.author = {
+      id: transformed.authorId,
+      // TODO: find author name
+    };
+    transformed.link = `/articles/${transformed.id}`;
+    delete transformed.body;
+    delete transformed.authorId;
+
+    return transformed;
+  });
+
+  const response = {
+    data: transformedArticle,
+    pagination: {
+      page,
+      limit,
+      next: 3,
+      prev: 1,
+      totalPage: Math.ceil(articles.length / limit),
+      totalItems: articles.length,
+    },
+    links: {
+      self: req.url,
+      next: `/articles?page=${page + 1}&limit=${limit}`,
+      prev: `/articles?page=${page - 1}&limit=${limit}`,
+    },
+  };
+
+  res.status(200).json(response);
 });
 
 app.post('/api/v1/articles', (req, res) => {
