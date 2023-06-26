@@ -4,8 +4,7 @@ const swaggerUI = require('swagger-ui-express');
 const YAML = require('yamljs');
 const swaggerDoc = YAML.load('./swagger.yaml');
 
-// const connection = require('./db.js');
-const Article = require('./models/Article.js');
+const articleService = require('./services/article.js');
 
 //express app
 const app = express();
@@ -20,49 +19,20 @@ app.get('/health', (_req, res) => {
 
 app.get('/api/v1/articles', async (req, res) => {
   // 1. extract query params
-  const page = +req.query.page || 1;
+  const page = +req.query.page;
   const limit = +req.query.limit || 10;
-  const sortType = req.query.sort_type || 'asc';
-  const sortBy = req.query.sort_by || 'updatedAt';
-  const searchTerm = req.query.search || '';
 
   // 2. call article service to fetch all articles
-  const articleInstance = new Article();
-  await articleInstance.init();
-  let articles;
-
-  //filter based on Search Term
-  if (searchTerm) {
-    articles = await articleInstance.search(searchTerm);
-  } else {
-    articles = await articleInstance.find();
-  }
-
-  //sorting
-  articles = await articleInstance.sort(articles, sortType, sortBy);
-
-  //pagination
-  const { result, totalItems, totalPage, hasNext, hasPrev } =
-    await articleInstance.pagination(articles, page, limit);
-  articles = result;
+  let { totalItems, totalPage, hasNext, hasPrev, articles } =
+    await articleService.findArticles({
+      ...req.query,
+      page,
+      limit,
+    });
 
   // 3. generate necessary responses
-
-  articles = articles.map((article) => {
-    const transformed = { ...article };
-    transformed.author = {
-      id: transformed.authorId,
-      // TODO: find author name
-    };
-    transformed.link = `/articles/${transformed.id}`;
-    delete transformed.body;
-    delete transformed.authorId;
-
-    return transformed;
-  });
-
   const response = {
-    data: articles,
+    data: articleService.transformArticles({ articles }),
     pagination: {
       page,
       limit,
