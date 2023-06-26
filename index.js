@@ -36,6 +36,29 @@ app.get('/api/v1/articles', async (req, res) => {
     );
   }
 
+  //sorting
+  articles = articles.sort((a, b) => {
+    if (sortType === 'asc') {
+      if (a[sortBy] > b[sortBy]) {
+        return 1;
+      } else if (a[sortBy] < b[sortBy]) {
+        return -1;
+      } else {
+        return 0;
+      }
+    } else if (sortType === 'dsc') {
+      if (b[sortBy] > a[sortBy]) {
+        return 1;
+      } else if (b[sortBy] < a[sortBy]) {
+        return -1;
+      } else {
+        return 0;
+      }
+    } else {
+      return 0;
+    }
+  });
+
   // 3. generate necessary responses
 
   const transformedArticle = articles.map((article) => {
