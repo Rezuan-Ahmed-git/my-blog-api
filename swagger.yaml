@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   version: '1.0.0'
-  title: 'FSA-My Blog API'
+  title: 'My Blog API'
   description: 'This is the first professional api project we are creating in our Advanced Backend Bootcamp. This is a simple blog api application where anyone can create a new account, login to their system and create articles that will be visible publicly.'
   contact:
     name: Rezuan Ahmed

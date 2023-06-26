@@ -1,7 +1,10 @@
+require('dotenv').config();
 const express = require('express');
 const swaggerUI = require('swagger-ui-express');
 const YAML = require('yamljs');
 const swaggerDoc = YAML.load('./swagger.yaml');
+
+require('./db.js');
 
 //express app
 const app = express();
@@ -15,6 +18,17 @@ app.get('/health', (_req, res) => {
 });
 
 app.get('/api/v1/articles', (req, res) => {
+  // 1. extract query params
+  const page = +req.query.page || 1;
+  const limit = +req.query.limit || 10;
+  const sortType = req.query.sort_type || 'asc';
+  const sortBy = req.query.sort_by || 'updatedAt';
+  const searchTerm = req.query.search || '';
+  console.log('Query params', req.query);
+  console.log('Default params', { page, limit, sortBy, sortType, searchTerm });
+  // 2. call article service to fetch all articles
+  // 3. generate necessary responses
+
   res.status(200).json({ path: '/articles', method: 'get' });
 });
 
