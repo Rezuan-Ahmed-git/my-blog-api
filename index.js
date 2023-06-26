@@ -38,34 +38,21 @@ app.get('/api/v1/articles', async (req, res) => {
 
   //sorting
   articles = articles.sort((a, b) => {
-    // if (sortType === 'asc') {
-    //   if (a[sortBy] > b[sortBy]) {
-    //     return 1;
-    //   } else if (a[sortBy] < b[sortBy]) {
-    //     return -1;
-    //   } else {
-    //     return 0;
-    //   }
-    // } else if (sortType === 'dsc') {
-    //   if (b[sortBy] > a[sortBy]) {
-    //     return 1;
-    //   } else if (b[sortBy] < a[sortBy]) {
-    //     return -1;
-    //   } else {
-    //     return 0;
-    //   }
-    // } else {
-    //   return 0;
-    // }
     if (sortType === 'asc')
       return a[sortBy].toString().localeCompare(b[sortBy].toString());
     if (sortType === 'dsc')
       return b[sortBy].toString().localeCompare(a[sortBy].toString());
   });
 
+  //pagination
+  const skip = page * limit - limit;
+  let resultedArticles = articles.slice(skip, skip + limit);
+  const totalItems = articles.length;
+  const totalPage = Math.ceil(totalItems / limit);
+
   // 3. generate necessary responses
 
-  const transformedArticle = articles.map((article) => {
+  resultedArticles = resultedArticles.map((article) => {
     const transformed = { ...article };
     transformed.author = {
       id: transformed.authorId,
@@ -79,21 +66,27 @@ app.get('/api/v1/articles', async (req, res) => {
   });
 
   const response = {
-    data: transformedArticle,
+    data: resultedArticles,
     pagination: {
       page,
       limit,
-      next: 3,
-      prev: 1,
-      totalPage: Math.ceil(articles.length / limit),
-      totalItems: articles.length,
+      totalPage,
+      totalItems,
     },
     links: {
       self: req.url,
-      next: `/articles?page=${page + 1}&limit=${limit}`,
-      prev: `/articles?page=${page - 1}&limit=${limit}`,
     },
   };
+
+  if (page > 1) {
+    response.pagination.prev = page - 1;
+    response.links.prev = `/articles?page=${page - 1}&limit=${limit}`;
+  }
+
+  if (page < totalPage) {
+    response.pagination.next = page + 1;
+    response.links.next = `/articles?page=${page + 1}&limit=${limit}`;
+  }
 
   res.status(200).json(response);
 });
