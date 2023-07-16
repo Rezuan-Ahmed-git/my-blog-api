@@ -1,4 +1,6 @@
 const Article = require('../models/Article');
+const databaseConnection = require('../db');
+
 const findArticles = async ({
   page = 1,
   limit = 5,
@@ -6,8 +8,7 @@ const findArticles = async ({
   sortBy = 'updatedAt',
   searchTerm = '',
 }) => {
-  const articleInstance = new Article();
-  await articleInstance.init();
+  const articleInstance = new Article(databaseConnection.db.articles);
   let articles;
 
   //filter based on Search Term

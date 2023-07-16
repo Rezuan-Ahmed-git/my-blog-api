@@ -5,6 +5,7 @@ const YAML = require('yamljs');
 const swaggerDoc = YAML.load('./swagger.yaml');
 const OpenApiValidator = require('express-openapi-validator');
 
+const databaseConnection = require('./db');
 const articleService = require('./services/article.js');
 
 //express app
@@ -101,6 +102,11 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(4000, () => {
-  console.log('Server is running on port 4000');
-});
+(async () => {
+  await databaseConnection.connect();
+  console.log('Database Connected');
+
+  app.listen(4000, () => {
+    console.log('Server is running on port 4000');
+  });
+})();
