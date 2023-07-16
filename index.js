@@ -18,6 +18,14 @@ app.use(
   })
 );
 
+app.use((req, res, next) => {
+  req.user = {
+    id: 999,
+    name: 'Rezuan',
+  };
+  next();
+});
+
 app.get('/health', (_req, res) => {
   res.status(200).json({
     health: 'OK',
@@ -79,10 +87,21 @@ app.post('/api/v1/articles', async (req, res) => {
     body,
     cover,
     status,
+    authorId: req.user.id,
   });
 
   //step-3: generate response
-  res.status(200).json({ path: '/articles', method: 'post' });
+  const response = {
+    code: 201,
+    message: 'Article created successfully',
+    data: article,
+    links: {
+      self: `${req.url}/${article.id}`,
+      author: `${req.url}/${article.id}/author`,
+      comment: `${req.url}/${article.id}/comments`,
+    },
+  };
+  res.status(201).json(response);
 });
 
 app.get('/api/v1/articles/:id', (req, res) => {
