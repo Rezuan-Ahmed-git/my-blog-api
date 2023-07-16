@@ -54,6 +54,17 @@ class Article {
     };
   }
 
+  async create(article, databaseConnection) {
+    article.id = this.articles[this.articles.length - 1].id + 1;
+    article.createdAt = new Date().toISOString();
+    article.updatedAt = new Date().toISOString();
+    this.articles.push(article);
+    databaseConnection.db.articles = this.articles;
+    await databaseConnection.write();
+
+    return article;
+  }
+
   async #sortAsc(articles, sortBy) {
     return articles.sort((a, b) =>
       a[sortBy].toString().localeCompare(b[sortBy].toString())

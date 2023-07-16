@@ -19,6 +19,8 @@ const findArticles = async ({
   }
 
   //sorting
+  // articles = [].concat(articles);
+  articles = [...articles];
   articles = await articleInstance.sort(articles, sortType, sortBy);
 
   //pagination
@@ -49,4 +51,13 @@ const transformArticles = ({ articles = [] }) => {
   });
 };
 
-module.exports = { findArticles, transformArticles };
+const createArticle = async ({ title, body, cover = '', status = 'draft' }) => {
+  const articleInstance = new Article(databaseConnection.db.articles);
+  const article = await articleInstance.create(
+    { title, body, cover, status },
+    databaseConnection
+  );
+  return article;
+};
+
+module.exports = { findArticles, transformArticles, createArticle };

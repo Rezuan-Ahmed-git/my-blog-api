@@ -69,7 +69,19 @@ app.get('/api/v1/articles', async (req, res) => {
   res.status(200).json(response);
 });
 
-app.post('/api/v1/articles', (req, res) => {
+app.post('/api/v1/articles', async (req, res) => {
+  //step-1: destructure the request body
+  const { title, body, cover, status } = req.body;
+
+  //step-2: invoke the service function
+  const article = await articleService.createArticle({
+    title,
+    body,
+    cover,
+    status,
+  });
+
+  //step-3: generate response
   res.status(200).json({ path: '/articles', method: 'post' });
 });
 
