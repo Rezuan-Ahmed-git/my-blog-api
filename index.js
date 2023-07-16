@@ -26,15 +26,20 @@ app.get('/health', (_req, res) => {
 
 app.get('/api/v1/articles', async (req, res) => {
   // 1. extract query params
-  const page = +req.query.page;
+  const page = +req.query.page || 1;
   const limit = +req.query.limit || 10;
+  const sortType = req.query.sort_type || 'dsc';
+  const sortBy = req.query.sort_by || 'updatedAt';
+  const searchTerm = req.query.searchTerm || '';
 
   // 2. call article service to fetch all articles
   let { totalItems, totalPage, hasNext, hasPrev, articles } =
     await articleService.findArticles({
-      ...req.query,
       page,
       limit,
+      sortBy,
+      sortType,
+      searchTerm,
     });
 
   // 3. generate necessary responses
@@ -53,12 +58,12 @@ app.get('/api/v1/articles', async (req, res) => {
 
   if (hasPrev) {
     response.pagination.prev = page - 1;
-    response.links.prev = `/articles?page=${page - 1}&limit=${limit}`;
+    response.links.prev = `${req.url}?page=${page - 1}&limit=${limit}`;
   }
 
   if (hasNext) {
     response.pagination.next = page + 1;
-    response.links.next = `/articles?page=${page + 1}&limit=${limit}`;
+    response.links.next = `${req.url}?page=${page + 1}&limit=${limit}`;
   }
 
   res.status(200).json(response);
