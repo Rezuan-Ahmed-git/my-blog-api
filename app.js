@@ -41,8 +41,19 @@ app.use((err, req, res, next) => {
 let connectionURL = process.env.DB_CONNECTION_URL;
 connectionURL = connectionURL.replace('<username>', process.env.DB_USERNAME);
 connectionURL = connectionURL.replace('<password>', process.env.DB_PASSWORD);
-mongoose.connect('mongodb://127.0.0.1:27017/test');
+connectionURL = `${connectionURL}/${process.env.DB_NAME}?${process.env.DB_URL_QUERY}`;
 
-app.listen(4000, () => {
-  console.log('Server is running on port 4000');
-});
+mongoose
+  .connect(connectionURL, {
+    serverSelectionTimeoutMS: 500,
+  })
+  .then(() => {
+    console.log('Database connected');
+    app.listen(4000, () => {
+      console.log('Server is running on port 4000');
+    });
+  })
+  .catch((e) => {
+    console.log('Database connection failed');
+    console.log('Message: ', e.message);
+  });
