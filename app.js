@@ -6,7 +6,7 @@ const YAML = require('yamljs');
 const swaggerDoc = YAML.load('./swagger.yaml');
 const OpenApiValidator = require('express-openapi-validator');
 
-const { seedUser } = require('./seed');
+const User = require('./model/User');
 
 //express app
 const app = express();
@@ -51,9 +51,10 @@ mongoose
   })
   .then(() => {
     console.log('Database connected');
-    app.listen(4000, () => {
+    app.listen(4000, async () => {
       console.log('Server is running on port 4000');
-      seedUser();
+      const users = await User.find({});
+      console.log(users);
     });
   })
   .catch((e) => {
