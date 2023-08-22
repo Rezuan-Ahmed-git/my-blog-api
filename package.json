@@ -2,11 +2,11 @@
   "name": "my-blog-api",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js",
-    "dev": "nodemon --ignore ./old/db exec node app.js"
+    "start": "node ./src/app.js",
+    "dev": "nodemon --ignore ./old/db exec node ./src/app.js"
   },
   "keywords": [],
   "author": "",
