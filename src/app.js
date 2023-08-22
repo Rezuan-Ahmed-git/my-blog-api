@@ -1,34 +1,18 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const swaggerUI = require('swagger-ui-express');
-const YAML = require('yamljs');
-const swaggerDoc = YAML.load('./swagger.yaml');
-const OpenApiValidator = require('express-openapi-validator');
 
-const User = require('./model/User');
+const applyMiddleware = require('./middleware/index');
 
 //express app
 const app = express();
-app.use(express.json());
-app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerDoc));
-app.use(
-  OpenApiValidator.middleware({
-    apiSpec: './swagger.yaml',
-  })
-);
 
-app.use((req, res, next) => {
-  req.user = {
-    id: 999,
-    name: 'Rezuan',
-  };
-  next();
-});
+applyMiddleware(app);
 
-app.get('/health', (_req, res) => {
+app.get('/health', (req, res) => {
   res.status(200).json({
     health: 'OK',
+    user: req.user,
   });
 });
 
@@ -51,16 +35,6 @@ mongoose
     console.log('Database connected');
     app.listen(4000, async () => {
       console.log('Server is running on port 4000');
-      // const users = await User.find({});
-      // console.log(users);
-      const user = new User({
-        name: 'Rezuan Ahmed',
-        email: 'rezuan@gmail.com',
-        password: '123456',
-      });
-
-      await user.save();
-      console.log('User created');
     });
   })
   .catch((e) => {
