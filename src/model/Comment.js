@@ -1,6 +1,6 @@
 const { Schema, model } = require('mongoose');
 
-const CommentSchema = new Schema(
+const commentSchema = new Schema(
   {
     body: String,
     status: {
@@ -20,6 +20,6 @@ const CommentSchema = new Schema(
   { timestamps: true, id: true }
 );
 
-const Comment = model('Comment', CommentSchema);
+const Comment = model('Comment', commentSchema);
 
 module.exports = Comment;
