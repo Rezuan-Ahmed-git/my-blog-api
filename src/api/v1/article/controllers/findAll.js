@@ -1,19 +1,13 @@
 const articleService = require('../../../../lib/article');
-
-const generateQueryString = (query) => {
-  return Object.keys(query)
-    .map((key) => {
-      return encodeURIComponent(key) + '=' + encodeURIComponent(query[key]);
-    })
-    .join('&');
-};
+const { query } = require('../../../../utils');
+const defaults = require('../../../../config/defaults');
 
 const findAll = async (req, res, next) => {
-  const page = req.query.page || 1;
-  const limit = req.query.limit || 10;
-  const sortType = req.query.sort_type || 'dsc';
-  const sortBy = req.query.sort_by || 'updatedAt';
-  const search = req.query.search || '';
+  const page = req.query.page || defaults.page;
+  const limit = req.query.limit || defaults.limit;
+  const sortType = req.query.sort_type || defaults.sortType;
+  const sortBy = req.query.sort_by || defaults.sortBy;
+  const search = req.query.search || defaults.search;
 
   try {
     //data
@@ -25,44 +19,25 @@ const findAll = async (req, res, next) => {
       sortType,
     });
 
-    const data = articles.map((article) => ({
-      ...article._doc,
-      link: `/articles/${article.id}`,
-    }));
-
+    const data = query.getTransformedItems({
+      items: articles,
+      path: '/articles',
+      selection: ['id', 'title', 'cover', 'author', 'updatedAt', 'createdAt'],
+    });
     //pagination
     const totalItems = await articleService.count({ search });
-    const totalPage = Math.ceil(totalItems / limit);
-
-    const pagination = {
-      page,
-      limit,
-      totalItems,
-      totalPage,
-    };
-
-    if (page < totalPage) {
-      pagination.next = page + 1;
-    }
-
-    if (page > 1) {
-      pagination.prev = page - 1;
-    }
+    const pagination = query.getPagination({ totalItems, limit, page });
 
     //HATEOAS Links
 
-    const links = {
-      self: req.url,
-    };
-
-    if (pagination.next) {
-      const query = generateQueryString({ ...req.query, page: page + 1 });
-      links.next = `${req.path}?${query}`;
-    }
-    if (pagination.prev) {
-      const query = generateQueryString({ ...req.query, page: page - 1 });
-      links.prev = `${req.path}?${query}`;
-    }
+    const links = query.getHATEOASForAllItems({
+      url: req.url,
+      path: req.path,
+      query: req.query,
+      hasNext: !!pagination.next,
+      hasPrev: !!pagination.prev,
+      page,
+    });
 
     res.status(200).json({
       data,
