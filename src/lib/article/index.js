@@ -29,7 +29,13 @@ const count = ({ search = defaults.search }) => {
   return Article.count(filter);
 };
 
-const create = ({ title, body = '', cover = '', status = 'draft', author }) => {
+const create = async ({
+  title,
+  body = '',
+  cover = '',
+  status = 'draft',
+  author,
+}) => {
   if (!title || !author) {
     const error = new Error('Invalid parameters');
     error.status = 400;
@@ -43,7 +49,36 @@ const create = ({ title, body = '', cover = '', status = 'draft', author }) => {
     status,
     author: author.id,
   });
-  return article.save();
+  await article.save();
+
+  return {
+    ...article._doc,
+    id: article.id,
+  };
 };
 
-module.exports = { findAll, create, count };
+const findSingleItem = async ({ id, expand = '' }) => {
+  if (!id) throw new Error('Id is required');
+
+  expand = expand.split(',').map((item) => item.trim());
+
+  const article = await Article.findById(id);
+  if (expand.includes('author')) {
+    await article.populate({
+      path: 'author',
+      select: 'name',
+    });
+  }
+  if (expand.includes('comment')) {
+    await article.populate({
+      path: 'comments',
+    });
+  }
+
+  return {
+    ...article._doc,
+    id: article.id,
+  };
+};
+
+module.exports = { findAll, create, count, findSingleItem };

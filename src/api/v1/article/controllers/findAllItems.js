@@ -2,7 +2,7 @@ const articleService = require('../../../../lib/article');
 const { query } = require('../../../../utils');
 const defaults = require('../../../../config/defaults');
 
-const findAll = async (req, res, next) => {
+const findAllItems = async (req, res, next) => {
   const page = req.query.page || defaults.page;
   const limit = req.query.limit || defaults.limit;
   const sortType = req.query.sort_type || defaults.sortType;
@@ -49,4 +49,4 @@ const findAll = async (req, res, next) => {
   }
 };
 
-module.exports = findAll;
+module.exports = findAllItems;

@@ -681,6 +681,5 @@ components:
       required: true
       description: Article Id
       schema:
-        type: integer
-        format: int32
-        example: 1
+        type: string
+        example: '64e47f9b81f82de192028d59'
