@@ -1,6 +1,15 @@
 const { Article } = require('../../model');
 const defaults = require('../../config/defaults');
+const { notFound } = require('../../utils/error');
 
+/**
+ * Find all articles
+ * Pagination
+ * Searching
+ * Sorting
+ * @param {*} param0
+ * @returns
+ */
 const findAll = async ({
   page = defaults.page,
   limit = defaults.limit,
@@ -24,11 +33,21 @@ const findAll = async ({
   }));
 };
 
+/**
+ * Count all articles
+ * @param {*} param0
+ * @returns
+ */
 const count = ({ search = defaults.search }) => {
   const filter = { title: { $regex: search, $options: 'i' } };
   return Article.count(filter);
 };
 
+/**
+ * Create a new article
+ * @param {*} param0
+ * @returns
+ */
 const create = async ({
   title,
   body = '',
@@ -57,12 +76,21 @@ const create = async ({
   };
 };
 
+/**
+ * Find a single article
+ * @param {*} param0
+ * @returns
+ */
 const findSingleItem = async ({ id, expand = '' }) => {
   if (!id) throw new Error('Id is required');
 
   expand = expand.split(',').map((item) => item.trim());
 
   const article = await Article.findById(id);
+  if (!article) {
+    throw notFound();
+  }
+
   if (expand.includes('author')) {
     await article.populate({
       path: 'author',
@@ -81,4 +109,26 @@ const findSingleItem = async ({ id, expand = '' }) => {
   };
 };
 
-module.exports = { findAll, create, count, findSingleItem };
+const updateOrCreate = async (
+  id,
+  { title, body, author, cover = '', status = 'draft' }
+) => {
+  const article = await Article.findById(id);
+
+  if (!article) {
+    const article = await create({ title, body, cover, status, author });
+    return {
+      article,
+      code: 201,
+    };
+  }
+
+  const payload = { title, body, cover, status, author: author.id };
+
+  article.overwrite(payload);
+  await article.save();
+
+  return { article: { ...article._doc, id: article.id }, code: 200 };
+};
+
+module.exports = { findAll, create, count, findSingleItem, updateOrCreate };
