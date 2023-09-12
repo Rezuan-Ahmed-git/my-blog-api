@@ -95,11 +95,13 @@ const findSingleItem = async ({ id, expand = '' }) => {
     await article.populate({
       path: 'author',
       select: 'name',
+      strictPopulate: false,
     });
   }
   if (expand.includes('comment')) {
     await article.populate({
       path: 'comments',
+      strictPopulate: false,
     });
   }
 
@@ -131,4 +133,40 @@ const updateOrCreate = async (
   return { article: { ...article._doc, id: article.id }, code: 200 };
 };
 
-module.exports = { findAll, create, count, findSingleItem, updateOrCreate };
+const updateProperties = async (id, { title, body, cover, status }) => {
+  const article = await Article.findById(id);
+  if (!article) {
+    throw notFound();
+  }
+  const payload = { title, body, cover, status };
+
+  Object.keys(payload).forEach((key) => {
+    article[key] = payload[key] ?? article[key];
+  });
+
+  await article.save();
+
+  return { ...article._doc, id: article.id };
+};
+
+const removeItem = async (id) => {
+  const article = await Article.findById(id);
+  if (!article) {
+    throw notFound();
+  }
+
+  //TODO:
+  // Asynchronously Delete all associated comments
+
+  return Article.findByIdAndDelete(id);
+};
+
+module.exports = {
+  findAll,
+  create,
+  count,
+  findSingleItem,
+  updateOrCreate,
+  updateProperties,
+  removeItem,
+};
