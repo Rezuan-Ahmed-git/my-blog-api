@@ -1,0 +1,9 @@
+PATCH http://localhost:4000/api/v2/articles/64f679f1a31d303d91c6ad39
+content-type: application/json
+
+[
+     { "op": "replace", "path": "title", "value": "JSON Patch" },
+     { "op": "replace", "path": "body", "value": "Updated body using json patch" },
+     { "op": "add", "path": "test", "value": "Test property" },
+     { "op": "add", "path": "Test-2", "value": 1000 }
+]
