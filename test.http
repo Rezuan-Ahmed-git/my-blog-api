@@ -7,3 +7,24 @@ content-type: application/json
      { "op": "add", "path": "test", "value": "Test property" },
      { "op": "add", "path": "Test-2", "value": 1000 }
 ]
+
+###
+
+POST http://localhost:4000/api/v1/auth/register
+Content-Type: application/json
+
+{
+     "name": "Rezuan",
+     "email": "rezuanahmed.dev@gmail.com",
+     "password": "admin1234"
+}
+
+###
+
+POST http://localhost:4000/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "rezuanahmed.dev@gmail.com",
+  "password": "admin1234"
+}
