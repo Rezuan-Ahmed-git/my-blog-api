@@ -35,6 +35,11 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1MDJjNzY4MjU1OWQ3YzQ3NzEwYzI0MyIsIm5hbWUiOiJSZXp1YW4iLCJlbWFpbCI6InJlenVhbmFobWVkLmRldkBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTY5NDY5MTkxMH0.8_x7hqQN7rh31FKcQnntuVVECKq6tm54jvbipZozO3Q 
 
 {
-     "title": "Rezuan's New Post",
+     "title": "Rezuan Dev's - 2",
      "body": "Test Body"
 }
+
+###
+DELETE http://localhost:4000/api/v1/articles/650305cc931775766c905721
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1MDJjNzY4MjU1OWQ3YzQ3NzEwYzI0MyIsIm5hbWUiOiJSZXp1YW4iLCJlbWFpbCI6InJlenVhbmFobWVkLmRldkBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTY5NDY5MTkxMH0.8_x7hqQN7rh31FKcQnntuVVECKq6tm54jvbipZozO3Q 

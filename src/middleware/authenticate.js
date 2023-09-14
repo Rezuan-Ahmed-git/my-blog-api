@@ -16,7 +16,7 @@ const authenticate = async (req, _res, next) => {
       next(authenticationError(`Your account is ${user.status}`));
     }
 
-    req.user = user._doc;
+    req.user = { ...user._doc, id: user.id };
     next();
   } catch (e) {
     next(authenticationError());
