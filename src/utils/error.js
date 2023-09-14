@@ -16,4 +16,22 @@ const serverError = (msg = 'Internal Server Error') => {
   return error;
 };
 
-module.exports = { notFound, badRequest, serverError };
+const authenticationError = (msg = 'Authentication Failed') => {
+  const error = new Error(msg);
+  error.status = 401;
+  return error;
+};
+
+const authorizationError = (msg = 'Permission denied') => {
+  const error = new Error(msg);
+  error.status = 403;
+  return error;
+};
+
+module.exports = {
+  notFound,
+  badRequest,
+  serverError,
+  authenticationError,
+  authorizationError,
+};

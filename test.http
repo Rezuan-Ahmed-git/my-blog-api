@@ -28,3 +28,13 @@ Content-Type: application/json
   "email": "rezuanahmed.dev@gmail.com",
   "password": "admin1234"
 }
+
+###
+POST http://localhost:4000/api/v1/articles
+Content-Type: application/json
+Authorization: Test 
+
+{
+     "title": "Test title",
+     "body": "Test Body"
+}
