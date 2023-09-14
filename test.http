@@ -32,9 +32,9 @@ Content-Type: application/json
 ###
 POST http://localhost:4000/api/v1/articles
 Content-Type: application/json
-Authorization: Test 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1MDJjNzY4MjU1OWQ3YzQ3NzEwYzI0MyIsIm5hbWUiOiJSZXp1YW4iLCJlbWFpbCI6InJlenVhbmFobWVkLmRldkBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTY5NDY5MTkxMH0.8_x7hqQN7rh31FKcQnntuVVECKq6tm54jvbipZozO3Q 
 
 {
-     "title": "Test title",
+     "title": "Rezuan's New Post",
      "body": "Test Body"
 }
